@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace RhythmsGonnaGetYou2
 {
@@ -15,6 +17,7 @@ namespace RhythmsGonnaGetYou2
         public bool IsSigned { get; set; }
         public string ContactName { get; set; }
         public string ContactPhoneNumber { get; set; }
+        public List<Album> Albums { get; set; }
     }
     class Album
     {
@@ -22,6 +25,10 @@ namespace RhythmsGonnaGetYou2
         public string Title { get; set; }
         public bool IsExplicit { get; set; }
         public string ReleaseDate { get; set; }
+
+        public int BandId { get; set; }
+
+        public Band Band { get; set; }
 
     }
 
@@ -33,6 +40,8 @@ namespace RhythmsGonnaGetYou2
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            optionsBuilder.UseLoggerFactory(loggerFactory);
             optionsBuilder.UseNpgsql("server=localhost;database=RhythmsGonnaGetYou2");
         }
     }
@@ -44,11 +53,6 @@ namespace RhythmsGonnaGetYou2
             var theBands = context.Bands;
             var theAlbums = context.Albums;
 
-            // Console.WriteLine($"There is a band");
-
-            // var bandCount = theBands.Count();
-            // Console.WriteLine($"There are {bandCount} bands!");
-
             var hasQuitTheApplication = false;
             while (hasQuitTheApplication is false)
             {
@@ -57,6 +61,7 @@ namespace RhythmsGonnaGetYou2
                 Console.WriteLine("VIEW - View all the Bands");
                 Console.WriteLine("ADD ALBUM -  Add a new album");
                 Console.WriteLine("LET A BAND GO - Release Band From Contract");
+                Console.WriteLine("VIEW ALBUMS - View Albums from Bands")
                 Console.WriteLine("RESIGN - Resign Band");
                 Console.WriteLine("SIGNED - View Signed Bands");
                 Console.WriteLine("UNSIGNED - View Unsigned Bands");
@@ -103,6 +108,7 @@ namespace RhythmsGonnaGetYou2
                         ContactPhoneNumber = bandPhone,
                     };
                     theBands.Add(newBand);
+                    context.SaveChanges();
                 }
                 if (choice == "ADD ALBUM")
                 {
@@ -112,19 +118,69 @@ namespace RhythmsGonnaGetYou2
                     var albumIsExplicit = bool.Parse(Console.ReadLine());
                     Console.WriteLine("RELEASE DATE: ");
                     var albumReleaseDate = Console.ReadLine();
+                    Console.WriteLine("BANDID:");
+                    var albumBandId = int.Parse(Console.ReadLine());
 
                     var newAlbum = new Album()
                     {
                         Title = albumTitle,
                         IsExplicit = albumIsExplicit,
                         ReleaseDate = albumReleaseDate,
+                        BandId = albumBandId,
 
                     };
                     theAlbums.Add(newAlbum);
+                    context.SaveChanges();
+                }
+                if (choice == "LET A BAND GO")
+                {
+                    Console.WriteLine("NAME: ");
+                    var bandToLetGo = Console.ReadLine();
+                    var letBandGo = context.Bands.FirstOrDefault(band => band.Name == bandToLetGo);
+                    if (letBandGo != null)
+                    {
+                        letBandGo.IsSigned = false;
+                        context.Entry(letBandGo).State = EntityState.Modified;
+                        context.SaveChanges();
+                    }
+                }
+                if (choice == "RESIGN")
+                {
+                    Console.WriteLine("NAME: ");
+                    var bandToResign = Console.ReadLine();
+                    var resignBand = context.Bands.FirstOrDefault(band => band.Name == bandToResign);
+                    if (resignBand != null)
+                    {
+                        resignBand.IsSigned = true;
+                        context.Entry(resignBand).State = EntityState.Modified;
+                        context.SaveChanges();
+                    }
+                }
+                if (choice == "VIEW ALBUMS")
+                {
+                    // Console.WriteLine("BAND NAME:");
+                    // var bandsAlbums = Console.ReadLine();
+                    // var allAlbums = context.Bands.FirstOrDefault(band => band.Albums == bandsAlbums);
 
 
 
                 }
+                if (choice == "SIGNED")
+                {
+                    // ADD VIEW SIGNED BANDS
+                    var signedBands = theBands.Where(band => band.IsSigned == true);
+
+                    Console.WriteLine($"{signedBands}");
+
+                }
+                if (choice == "UNSIGNED")
+                {
+                    // VIEW UNSIGNED BANDS
+                    var unsignedBands = theBands.Where(band => band.IsSigned == false);
+
+                    Console.WriteLine($"{unsignedBands}");
+                }
+
                 if (choice == "QUIT")
                 {
                     hasQuitTheApplication = true;
