@@ -18,16 +18,17 @@ namespace RhythmsGonnaGetYou2
         public string ContactName { get; set; }
         public string ContactPhoneNumber { get; set; }
         public List<Album> Albums { get; set; }
+        public Album Album { get; set; }
+
     }
     class Album
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public bool IsExplicit { get; set; }
-        public string ReleaseDate { get; set; }
-
+        public DateTime ReleaseDate { get; set; }
         public int BandId { get; set; }
-
+        public List<Band> Bands { get; set; }
         public Band Band { get; set; }
 
     }
@@ -51,7 +52,8 @@ namespace RhythmsGonnaGetYou2
         {
             var context = new RhythmsGonnaGetYou2Context();
             var theBands = context.Bands;
-            var theAlbums = context.Albums;
+            var theAlbums = context.Albums.Include(album => album.Band);
+
 
             var hasQuitTheApplication = false;
             while (hasQuitTheApplication is false)
@@ -61,7 +63,7 @@ namespace RhythmsGonnaGetYou2
                 Console.WriteLine("VIEW - View all the Bands");
                 Console.WriteLine("ADD ALBUM -  Add a new album");
                 Console.WriteLine("LET A BAND GO - Release Band From Contract");
-                Console.WriteLine("VIEW ALBUMS - View Albums from Bands")
+                Console.WriteLine("VIEW ALBUMS - View Albums from Bands");
                 Console.WriteLine("RESIGN - Resign Band");
                 Console.WriteLine("SIGNED - View Signed Bands");
                 Console.WriteLine("UNSIGNED - View Unsigned Bands");
@@ -117,7 +119,7 @@ namespace RhythmsGonnaGetYou2
                     Console.WriteLine("EXPLICIT?: ");
                     var albumIsExplicit = bool.Parse(Console.ReadLine());
                     Console.WriteLine("RELEASE DATE: ");
-                    var albumReleaseDate = Console.ReadLine();
+                    var albumReleaseDate = DateTime.Parse(Console.ReadLine());
                     Console.WriteLine("BANDID:");
                     var albumBandId = int.Parse(Console.ReadLine());
 
@@ -127,10 +129,10 @@ namespace RhythmsGonnaGetYou2
                         IsExplicit = albumIsExplicit,
                         ReleaseDate = albumReleaseDate,
                         BandId = albumBandId,
-
                     };
-                    theAlbums.Add(newAlbum);
+                    // theAlbums.Add(newAlbum);
                     context.SaveChanges();
+
                 }
                 if (choice == "LET A BAND GO")
                 {
@@ -158,11 +160,23 @@ namespace RhythmsGonnaGetYou2
                 }
                 if (choice == "VIEW ALBUMS")
                 {
+
+
+                    foreach (var album in theAlbums)
+                    {
+                        Console.WriteLine($"there are {album.Title} by the band {album.Band}");
+
+                    }
+
+                    // Console.WriteLine("What Bands albums do you want to view?:");
+
+                    // var bandsAlbumsToView = Console.ReadLine();
+
+                    // var existingAlbumsToView = context.Albums.FirstOrDefault(album => album.Band == bandsAlbumsToView);
+
                     // Console.WriteLine("BAND NAME:");
                     // var bandsAlbums = Console.ReadLine();
                     // var allAlbums = context.Bands.FirstOrDefault(band => band.Albums == bandsAlbums);
-
-
 
                 }
                 if (choice == "SIGNED")
