@@ -51,7 +51,7 @@ namespace RhythmsGonnaGetYou2
         {
             var context = new RhythmsGonnaGetYou2Context();
             var theBands = context.Bands;
-            var theAlbums = context.Albums.Include(album => album.Band);
+            var theAlbums = context.Albums;
 
 
             var hasQuitTheApplication = false;
@@ -129,7 +129,7 @@ namespace RhythmsGonnaGetYou2
                         ReleaseDate = albumReleaseDate,
                         BandId = albumBandId,
                     };
-                    // theAlbums.Add(newAlbum);
+                    theAlbums.Add(newAlbum);
                     context.SaveChanges();
 
                 }
@@ -161,17 +161,20 @@ namespace RhythmsGonnaGetYou2
                 {
 
 
-                    foreach (var album in theAlbums)
-                    {
-                        Console.WriteLine($"there are {album.Title} by the band {album.Band.Name}");
+                    // foreach (var album in theAlbums)
+                    // {
+                    //     Console.WriteLine($"there are {album.Title} by the band {album.Band.Name}");
 
-                    }
+                    // }
 
-                    // Console.WriteLine("What Bands albums do you want to view?:");
+                    Console.WriteLine("What Bands albums do you want to view?:");
 
-                    // var bandsAlbumsToView = Console.ReadLine();
+                    var bandsAlbumsToView = Console.ReadLine();
 
-                    // var existingAlbumsToView = context.Albums.FirstOrDefault(album => album.Band == bandsAlbumsToView);
+                    var existingAlbumsToView = context.Albums.FirstOrDefault(album => album.Band.Name == bandsAlbumsToView);
+
+                    Console.WriteLine($"The Band {bandsAlbumsToView} has These Albums {existingAlbumsToView}");
+
 
                     // Console.WriteLine("BAND NAME:");
                     // var bandsAlbums = Console.ReadLine();
