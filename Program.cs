@@ -18,7 +18,7 @@ namespace RhythmsGonnaGetYou2
         public string ContactName { get; set; }
         public string ContactPhoneNumber { get; set; }
         public List<Album> Albums { get; set; }
-        public Album Album { get; set; }
+        // public Album Album { get; set; }
 
     }
     class Album
@@ -28,7 +28,6 @@ namespace RhythmsGonnaGetYou2
         public bool IsExplicit { get; set; }
         public DateTime ReleaseDate { get; set; }
         public int BandId { get; set; }
-        public List<Band> Bands { get; set; }
         public Band Band { get; set; }
 
     }
@@ -164,7 +163,7 @@ namespace RhythmsGonnaGetYou2
 
                     foreach (var album in theAlbums)
                     {
-                        Console.WriteLine($"there are {album.Title} by the band {album.Band}");
+                        Console.WriteLine($"there are {album.Title} by the band {album.Band.Name}");
 
                     }
 
